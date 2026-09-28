@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: spring-ai-rag
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ragdb
+    username: postgres
+    password: postgres
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: gpt-4o-mini
+          temperature: 0.3
+      embedding:
+        options:
+          model: text-embedding-3-small
+
+    vectorstore:
+      pgvector:
+        initialize-schema: true
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        dimensions: 1536
+        table-name: vector_store
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.ai: INFO
