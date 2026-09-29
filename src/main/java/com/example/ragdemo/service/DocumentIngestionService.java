@@ -8,7 +8,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -37,13 +36,7 @@ public class DocumentIngestionService {
             // Tag every chunk with its source filename so it can be cited later
             rawDocs.forEach(doc -> doc.getMetadata().put("source", file.getOriginalFilename()));
 
-            TokenTextSplitter splitter = new TokenTextSplitter(
-                    800,   // target chunk size (tokens)
-                    350,   // min chunk size before merging with neighbor
-                    5,     // min chunk length in chars to keep
-                    10000, // max number of chunks
-                    true   // keep separators
-            );
+            TokenTextSplitter splitter = new TokenTextSplitter();
             List<Document> chunks = splitter.apply(rawDocs);
 
             vectorStore.add(chunks);

@@ -5,17 +5,20 @@ and Postgres/pgvector as the vector store.
 
 ## Stack
 
-- Spring Boot 3.3
-- Spring AI 1.0 (`ChatClient` + `QuestionAnswerAdvisor` + `PgVectorStore`)
+- Spring Boot 3.5
+- Spring AI 1.1 (`ChatClient` + `QuestionAnswerAdvisor` + `PgVectorStore`)
 - Postgres 16 with the `pgvector` extension
-- OpenAI for chat + embedding models (swap for Ollama/Azure/Bedrock by changing the starter)
+- Google GenAI (Gemini) for chat + embedding models
 
 ## Prerequisites
 
-- Java 17+
-- Maven 3.9+
+- Java 21+
 - Docker (for Postgres)
-- An `OPENAI_API_KEY` environment variable
+- A `GEMINI_API_KEY` environment variable
+
+No local Maven install needed — the project includes the Maven Wrapper
+(`mvnw` / `mvnw.cmd`), which downloads and uses the correct Maven version
+automatically on first run.
 
 ## Run it
 
@@ -28,13 +31,14 @@ and Postgres/pgvector as the vector store.
 2. Export your API key:
 
    ```bash
-   export OPENAI_API_KEY=sk-...
+   export GEMINI_API_KEY=your_key_here
    ```
 
 3. Run the app:
 
    ```bash
-   ./mvnw spring-boot:run
+   ./mvnw spring-boot:run       # macOS/Linux
+   .\mvnw.cmd spring-boot:run   # Windows
    ```
 
    The app starts on `http://localhost:8080`. On first boot, Spring AI's
@@ -69,8 +73,8 @@ Response:
 ```json
 {
   "answer": "...",
-  "sources": [
-    { "content": "...chunk text...", "metadata": { "source": "doc.pdf" } }
+  "metadata": [
+    { "source": "doc.pdf", "distance": 0.15 }
   ]
 }
 ```
@@ -78,24 +82,9 @@ Response:
 ## Tests
 
 ```bash
-./mvnw test
+./mvnw test       # macOS/Linux
+.\mvnw.cmd test   # Windows
 ```
 
 The included test mocks `DocumentIngestionService` / `RagQueryService`, so it runs
-without a live Postgres or OpenAI connection.
-
-## Notes / things to tune for production
-
-- **Chunking**: `TokenTextSplitter` params in `DocumentIngestionService` (chunk size,
-  overlap) should be tuned to your document types — smaller chunks with overlap
-  generally help retrieval precision on technical docs.
-- **Embedding model / dimensions**: `text-embedding-3-small` = 1536 dims. If you
-  switch models, update `spring.ai.vectorstore.pgvector.dimensions` to match, or
-  the table schema will be wrong.
-- **Index type**: HNSW is a good default for approximate nearest-neighbor search
-  at scale; `IVFFLAT` is the other pgvector option if you need faster index builds
-  at the cost of recall.
-- **Multi-tenancy**: attach a `tenantId` (or similar) to document metadata at
-  ingestion time and use `SearchRequest.filterExpression(...)` to scope retrieval.
-- **Auth**: no security is configured here — add Spring Security before exposing
-  `/api/rag/ingest` beyond local dev.
+without a live Postgres or Gemini connection.

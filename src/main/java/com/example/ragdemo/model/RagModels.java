@@ -9,7 +9,5 @@ public class RagModels {
 
     public record AskRequest(String question) {}
 
-    public record AskResponse(String answer, List<SourceChunk> sources) {}
-
-    public record SourceChunk(String content, Map<String, Object> metadata) {}
+    public record AskResponse(String answer, List<Map<String, Object>> metadata) {}
 }

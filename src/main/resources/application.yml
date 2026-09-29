@@ -8,15 +8,18 @@ spring:
     password: postgres
 
   ai:
-    openai:
-      api-key: ${OPENAI_API_KEY}
+    google.genai:
+      api-key: ${GEMINI_API_KEY}
       chat:
         options:
-          model: gpt-4o-mini
+          model: gemini-3.8-flash
           temperature: 0.3
       embedding:
-        options:
-          model: text-embedding-3-small
+        api-key: ${GEMINI_API_KEY}
+        text:
+          options:
+            dimensions: 1536
+            model: gemini-embedding-001
 
     vectorstore:
       pgvector:
@@ -25,6 +28,7 @@ spring:
         distance-type: COSINE_DISTANCE
         dimensions: 1536
         table-name: vector_store
+        remove-existing-vector-store-table: false
 
 server:
   port: 8080

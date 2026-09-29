@@ -1,7 +1,6 @@
 package com.example.ragdemo.service;
 
 import com.example.ragdemo.model.RagModels.AskResponse;
-import com.example.ragdemo.model.RagModels.SourceChunk;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
@@ -9,6 +8,7 @@ import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class RagQueryService {
@@ -25,7 +25,7 @@ public class RagQueryService {
      * Answers a question using RAG. The QuestionAnswerAdvisor configured on the
      * ChatClient bean handles retrieval + prompt augmentation automatically.
      * We separately re-run the similarity search here purely to surface the
-     * source chunks back to the caller for citation/auditability.
+     * source chunk metadata back to the caller for citation/auditability.
      */
     public AskResponse ask(String question) {
         String answer = chatClient.prompt()
@@ -37,14 +37,14 @@ public class RagQueryService {
                 SearchRequest.builder()
                         .query(question)
                         .topK(5)
-                        .similarityThreshold(0.75)
+                        .similarityThreshold(0.0)
                         .build()
         );
 
-        List<SourceChunk> sources = retrieved.stream()
-                .map(doc -> new SourceChunk(doc.getText(), doc.getMetadata()))
+        List<Map<String, Object>> metadata = retrieved.stream()
+                .map(Document::getMetadata)
                 .toList();
 
-        return new AskResponse(answer, sources);
+        return new AskResponse(answer, metadata);
     }
 }
