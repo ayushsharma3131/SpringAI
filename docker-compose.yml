@@ -15,6 +15,7 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   app:
+    image: ayushsharma3131/spring-ai-rag:latest
     build:
       context: .
       dockerfile: Dockerfile

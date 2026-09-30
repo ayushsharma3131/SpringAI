@@ -1,3 +1,9 @@
 /.idea/
 /target/
 .env
+/terraform/gce/secrets.auto.tfvars
+/terraform/gce/terraform.tfstate.backup
+/terraform/gce/terraform.tfstate
+/terraform/gce/.terraform/
+/src/main/resources/Ayush_Sharma_Resume.pdf
+/terraform/gce/.terraform.lock.hcl
